@@ -1487,10 +1487,9 @@ class ACEStepPipeline:
     ):
         output_audio_paths = []
         bs = latents.shape[0]
-        audio_lengths = [target_wav_duration_second * sample_rate] * bs
         pred_latents = latents
         with torch.no_grad():
-            if self.overlapped_decode:
+            if self.overlapped_decode and target_wav_duration_second > 48:
                 _, pred_wavs = self.music_dcae.decode_overlap(pred_latents, sr=sample_rate)
             else:
                 _, pred_wavs = self.music_dcae.decode(pred_latents, sr=sample_rate)
