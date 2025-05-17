@@ -9,11 +9,6 @@ Apache 2.0 License
 import os
 import click
 
-from acestep.ui.components import create_main_demo_ui
-from acestep.pipeline_ace_step import ACEStepPipeline
-from acestep.data_sampler import DataSampler
-
-
 @click.command()
 @click.option(
     "--checkpoint_path",
@@ -59,6 +54,10 @@ def main(checkpoint_path, server_name, port, device_id, share, bf16, torch_compi
 
     os.environ["CUDA_VISIBLE_DEVICES"] = str(device_id)
 
+    from acestep.ui.components import create_main_demo_ui
+    from acestep.pipeline_ace_step import ACEStepPipeline
+    from acestep.data_sampler import DataSampler
+
     model_demo = ACEStepPipeline(
         checkpoint_dir=checkpoint_path,
         dtype="bfloat16" if bf16 else "float32",
@@ -71,6 +70,7 @@ def main(checkpoint_path, server_name, port, device_id, share, bf16, torch_compi
     demo = create_main_demo_ui(
         text2music_process_func=model_demo.__call__,
         sample_data_func=data_sampler.sample,
+        load_data_func=data_sampler.load_json,
     )
     demo.launch(server_name=server_name, server_port=port, share=share)
 
